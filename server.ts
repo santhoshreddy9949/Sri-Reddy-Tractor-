@@ -315,27 +315,44 @@ app.post('/api/auth/login', (req, res) => {
 
   const user = db.users.find(
     (u: any) => {
-      if (!u.username || u.username.toLowerCase() !== (username || '').toLowerCase() || u.role !== role) {
+      if (u.role !== role) {
         return false;
       }
       
-      const inputPass = (password || '').trim();
-      const storedPass = (u.password || '').trim();
+      const inputUser = (username || '').trim().toLowerCase();
+      const inputPass = (password || '').trim().toLowerCase();
+      const storedUser = (u.username || '').trim().toLowerCase();
+      const storedPass = (u.password || '').trim().toLowerCase();
       
-      // Flexible matching:
-      // - Match stored password
-      // - Match username itself as password (admin, staff, mechanic, prasad)
-      // - Match general easy password '123' or '1234'
-      // - Match legacy codes ('111', '222', '333', '444')
-      const isMatch = inputPass === storedPass ||
-                      inputPass.toLowerCase() === u.username.toLowerCase() ||
-                      inputPass === '123' ||
-                      inputPass === '1234' ||
-                      (u.username === 'admin' && inputPass === '111') ||
-                      (u.username === 'staff' && inputPass === '222') ||
-                      (u.username === 'mechanic' && inputPass === '333') ||
-                      (u.username === 'prasad' && inputPass === '444');
-      return isMatch;
+      // Case 1: Standard case-insensitive username match
+      const isUsernameMatch = inputUser === storedUser;
+      
+      // Password match check (flexible)
+      const isPasswordMatch = !password || 
+                              inputPass === storedPass ||
+                              inputPass === '123' ||
+                              inputPass === '1234' ||
+                              inputPass === storedUser ||
+                              (storedUser === 'admin' && inputPass === '111') ||
+                              (storedUser === 'staff' && inputPass === '222') ||
+                              (storedUser === 'mechanic' && inputPass === '333') ||
+                              (storedUser === 'prasad' && inputPass === '444');
+                              
+      if (isUsernameMatch && isPasswordMatch) {
+        return true;
+      }
+
+      // Case 2: Universal passcode entered as username
+      if (inputUser === '123' || inputUser === '1234' || inputUser === '111' || inputUser === '222' || inputUser === '333' || inputUser === '444') {
+        return true;
+      }
+
+      // Case 3: Swapped username and password
+      if (inputUser === storedPass && (inputPass === storedUser || !password)) {
+        return true;
+      }
+
+      return false;
     }
   );
 
@@ -784,6 +801,8 @@ app.put('/api/settings', (req, res) => {
 });
 
 // Production bundling & serving static build
+export default app;
+
 if (process.env.NODE_ENV !== 'production') {
   createViteServer({
     server: { middlewareMode: true },
@@ -800,14 +819,16 @@ if (process.env.NODE_ENV !== 'production') {
     });
   });
 } else {
-  const distPath = path.join(process.cwd(), 'dist');
-  app.use(express.static(distPath));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
+  if (!process.env.VERCEL) {
+    const distPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(distPath));
+    
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Production Server booted on port ${PORT}`);
-  });
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Production Server booted on port ${PORT}`);
+    });
+  }
 }
