@@ -3,6 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { UserRole, RepairStatus } from './src/types.ts';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 const app = express();
 const PORT = 3000;
@@ -25,14 +27,14 @@ const initialDatabase = {
     { id: 'c4', name: 'K. Ramudu', phone: '8008123456', address: 'Banaganapalli, AP', tractorModel: 'Massey Ferguson 241 DI', tractorNumber: 'AP-21-UB-8877', joinedDate: '2025-04-02' }
   ],
   spareParts: [
-    { id: 'p1', name: 'Swaraj Primary Outer Air Filter', category: 'Filters', brand: 'Donaldson', code: 'FL-SW-092', price: 1450, stock: 12, supplier: 'Ananta Spares Ltd', minStockAlert: 5 },
-    { id: 'p2', name: 'Mahindra 575 DI Heavy-Duty Clutch Plate', category: 'Clutch parts', brand: 'Valeo', code: 'CP-MH-575', price: 4200, stock: 4, supplier: 'Hyderabad Auto Parts', minStockAlert: 5 },
-    { id: 'p3', name: 'Tractor Engine Head Gasket (Universal)', category: 'Tractor engine parts', brand: 'Goetze', code: 'GK-UN-109', price: 1850, stock: 2, supplier: 'Goetze India', minStockAlert: 4 },
-    { id: 'p4', name: 'Bosch Fuel Filter Element', category: 'Filters', brand: 'Bosch', code: 'FL-BS-441', price: 380, stock: 45, supplier: 'Bosch India Spares', minStockAlert: 10 },
-    { id: 'p5', name: 'Heavy-Duty Clutch Release Bearing', category: 'Clutch parts', brand: 'SKF', code: 'BR-SKF-88', price: 1250, stock: 3, supplier: 'SKF Bearings', minStockAlert: 5 },
-    { id: 'p6', name: 'Tractor Brake Shoe Set (Left + Right)', category: 'Brake parts', brand: 'TVS Girling', code: 'BK-TVS-03', price: 2800, stock: 8, supplier: 'TVS Auto Distribution', minStockAlert: 3 },
-    { id: 'p7', name: 'Exide Shaktiman Tractor Battery 88AH', category: 'Battery parts', brand: 'Exide', code: 'BT-EX-88', price: 7200, stock: 1, supplier: 'Exide Industries', minStockAlert: 2 },
-    { id: 'p8', name: 'Tractor Transmission Gear Oil (7.5 Liters)', category: 'Automobile spare parts', brand: 'Gulf Lubricants', code: 'OL-GF-75', price: 3400, stock: 15, supplier: 'Gulf Oil Co', minStockAlert: 6 }
+    { id: 'p1', name: 'Swaraj Primary Outer Air Filter', category: 'Filters', brand: 'Donaldson', code: 'FL-SW-092', price: 1450, stock: 12, supplier: 'Ananta Spares Ltd', minStockAlert: 5, image: '' },
+    { id: 'p2', name: 'Mahindra 575 DI Heavy-Duty Clutch Plate', category: 'Clutch parts', brand: 'Valeo', code: 'CP-MH-575', price: 4200, stock: 4, supplier: 'Hyderabad Auto Parts', minStockAlert: 5, image: '' },
+    { id: 'p3', name: 'Tractor Engine Head Gasket (Universal)', category: 'Tractor engine parts', brand: 'Goetze', code: 'GK-UN-109', price: 1850, stock: 2, supplier: 'Goetze India', minStockAlert: 4, image: '' },
+    { id: 'p4', name: 'Bosch Fuel Filter Element', category: 'Filters', brand: 'Bosch', code: 'FL-BS-441', price: 380, stock: 45, supplier: 'Bosch India Spares', minStockAlert: 10, image: '' },
+    { id: 'p5', name: 'Heavy-Duty Clutch Release Bearing', category: 'Clutch parts', brand: 'SKF', code: 'BR-SKF-88', price: 1250, stock: 3, supplier: 'SKF Bearings', minStockAlert: 5, image: '' },
+    { id: 'p6', name: 'Tractor Brake Shoe Set (Left + Right)', category: 'Brake parts', brand: 'TVS Girling', code: 'BK-TVS-03', price: 2800, stock: 8, supplier: 'TVS Auto Distribution', minStockAlert: 3, image: '' },
+    { id: 'p7', name: 'Exide Shaktiman Tractor Battery 88AH', category: 'Battery parts', brand: 'Exide', code: 'BT-EX-88', price: 7200, stock: 1, supplier: 'Exide Industries', minStockAlert: 2, image: '' },
+    { id: 'p8', name: 'Tractor Transmission Gear Oil (7.5 Liters)', category: 'Automobile spare parts', brand: 'Gulf Lubricants', code: 'OL-GF-75', price: 3400, stock: 15, supplier: 'Gulf Oil Co', minStockAlert: 6, image: '' }
   ],
   mechanics: [
     { id: 'm1', name: 'Sunil Kumar (Senior Mechanic)', phone: '9848123123', specialization: 'Engine Overhauling & Gearbox Repair', status: 'In Repair', skills: ['Engine', 'Gearbox', 'Clutch'] },
@@ -138,31 +140,143 @@ const initialDatabase = {
   }
 };
 
+// Local database cache in memory
+let dbCache = initialDatabase;
+
 // Helper to load/save database state
 function readDatabase() {
-  try {
-    if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify(initialDatabase, null, 2), 'utf-8');
-      return initialDatabase;
-    }
-    const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error('Error reading JSON DB, fallback to memory', error);
-    return initialDatabase;
-  }
+  return dbCache;
 }
 
 function writeDatabase(data: any) {
   try {
+    dbCache = data;
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    if (firestoreDb) {
+      saveToFirestoreBackground(data);
+    }
   } catch (err) {
     console.error('Error writing JSON DB', err);
   }
 }
 
-// Ensure database file is initialized at startup
-readDatabase();
+// Initialize database cache on boot from file (as fallback/starting point)
+try {
+  if (fs.existsSync(DB_FILE)) {
+    const raw = fs.readFileSync(DB_FILE, 'utf-8');
+    dbCache = { ...initialDatabase, ...JSON.parse(raw) };
+  } else {
+    fs.writeFileSync(DB_FILE, JSON.stringify(initialDatabase, null, 2), 'utf-8');
+  }
+} catch (e) {
+  console.error('Failed to init local DB cache:', e);
+}
+
+// Initialize Firebase if config exists
+const FIREBASE_CONFIG_FILE = path.join(process.cwd(), 'firebase-applet-config.json');
+let firestoreDb: any = null;
+
+try {
+  if (fs.existsSync(FIREBASE_CONFIG_FILE)) {
+    const configRaw = fs.readFileSync(FIREBASE_CONFIG_FILE, 'utf-8');
+    const firebaseConfig = JSON.parse(configRaw);
+    if (firebaseConfig && firebaseConfig.projectId) {
+      const firebaseApp = initializeApp(firebaseConfig);
+      firestoreDb = getFirestore(firebaseApp);
+      console.log('Firebase initialized successfully for Firestore sync.');
+    }
+  }
+} catch (error) {
+  console.error('Error initializing Firebase:', error);
+}
+
+const collectionsToSync = ['users', 'customers', 'spareParts', 'mechanics', 'repairs', 'invoices', 'settings'];
+
+async function loadFromFirestore() {
+  if (!firestoreDb) return;
+  console.log('Loading database state from Firestore...');
+  try {
+    const loadedData: any = {};
+    let hasAnyData = false;
+    for (const key of collectionsToSync) {
+      const docRef = doc(firestoreDb, 'store', key);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const docData = docSnap.data();
+        if (docData && Array.isArray(docData.data)) {
+          loadedData[key] = docData.data;
+          hasAnyData = true;
+          console.log(`Loaded key "${key}" from Firestore: ${docData.data.length} items`);
+        } else if (docData && docData.data && typeof docData.data === 'object') {
+          loadedData[key] = docData.data;
+          hasAnyData = true;
+          console.log(`Loaded key "${key}" from Firestore (object)`);
+        }
+      } else {
+        console.log(`Document store/${key} not found in Firestore.`);
+      }
+    }
+    
+    if (hasAnyData) {
+      dbCache = {
+        ...initialDatabase,
+        ...dbCache,
+        ...loadedData
+      };
+      fs.writeFileSync(DB_FILE, JSON.stringify(dbCache, null, 2), 'utf-8');
+      console.log('Database state successfully sync\'d from Firestore on boot.');
+      
+      // Seed back any collections that were not in Firestore but are in initial/local DB
+      let needsRefill = false;
+      for (const key of collectionsToSync) {
+        if (!loadedData[key]) {
+          console.log(`Refilling missing Firestore collection: ${key}`);
+          const docRef = doc(firestoreDb, 'store', key);
+          await setDoc(docRef, { data: dbCache[key] });
+          needsRefill = true;
+        }
+      }
+      if (needsRefill) {
+        console.log('Seeded missing Firestore collections successfully.');
+      }
+    } else {
+      console.log('Firestore is empty. Seeding initial data...');
+      await saveAllToFirestore(dbCache);
+    }
+  } catch (error) {
+    console.error('Failed to sync from Firestore on startup:', error);
+  }
+}
+
+async function saveAllToFirestore(data: any) {
+  if (!firestoreDb) return;
+  try {
+    for (const key of collectionsToSync) {
+      const docRef = doc(firestoreDb, 'store', key);
+      await setDoc(docRef, { data: data[key] });
+    }
+    console.log('Initial data successfully seeded to Firestore.');
+  } catch (error) {
+    console.error('Failed to seed initial data to Firestore:', error);
+  }
+}
+
+async function saveToFirestoreBackground(data: any) {
+  try {
+    for (const key of collectionsToSync) {
+      const docRef = doc(firestoreDb, 'store', key);
+      await setDoc(docRef, { data: data[key] });
+    }
+    console.log('Background sync to Firestore completed.');
+  } catch (error) {
+    console.error('Background sync to Firestore failed:', error);
+  }
+}
+
+// Trigger Firestore loading on boot asynchronously
+if (firestoreDb) {
+  loadFromFirestore();
+}
 
 // API Endpoints
 
@@ -175,16 +289,26 @@ app.get('/api/health', (req, res) => {
 app.post('/api/auth/login', (req, res) => {
   const { username, password, role } = req.body;
   const db = readDatabase();
+  console.log('[Auth] Login attempt:', { username, role, passwordProvided: !!password });
+  console.log('[Auth] Available users in DB:', db.users?.map((u: any) => ({ username: u.username, role: u.role, password: u.password })));
+  
+  if (!db.users || !Array.isArray(db.users)) {
+    console.error('[Auth] db.users is not an array!');
+    return res.status(500).json({ success: false, message: 'Database users table is uninitialized.' });
+  }
+
   const user = db.users.find(
-    (u: any) => u.username.toLowerCase() === username.toLowerCase() &&
+    (u: any) => u.username && u.username.toLowerCase() === (username || '').toLowerCase() &&
                u.password === password &&
                u.role === role
   );
 
   if (user) {
+    console.log('[Auth] Login successful for user:', user.username);
     const { password: _, ...userSafe } = user;
     res.json({ success: true, user: userSafe });
   } else {
+    console.warn('[Auth] Login failed for:', { username, role });
     res.status(401).json({ success: false, message: 'Invalid username, password, or role combination.' });
   }
 });

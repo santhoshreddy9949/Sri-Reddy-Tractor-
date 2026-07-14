@@ -1,0 +1,21 @@
+{
+  "entities": {
+    "StoreCollection": {
+      "title": "StoreCollection",
+      "description": "A synchronized database collection containing array or object data",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "description": "Array of entity records or settings configuration"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/store/{collectionName}": {
+      "schema": "StoreCollection",
+      "description": "Centralized database collection records"
+    }
+  }
+}

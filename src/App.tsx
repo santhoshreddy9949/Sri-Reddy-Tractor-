@@ -293,17 +293,6 @@ export default function App() {
                 />
               </div>
 
-              {/* DEMO ACCOUNTS HELPER BOX (Saves user from searching or asking how to log in) */}
-              <div className="bg-slate-50 p-3 rounded-lg border text-[10.5px] text-slate-500">
-                <p className="font-bold text-slate-705 mb-1 bg-amber-500/10 px-1.5 py-0.5 rounded inline-block text-[9.5px]">💡 MOCK PORTAL PASSWORDS</p>
-                <ul className="space-y-1 font-mono">
-                  <li>• Owners (Admin): <strong className="text-slate-800">admin</strong> / password: <strong className="text-slate-850">111</strong></li>
-                  <li>• Office Staff: <strong className="text-slate-800">staff</strong> / password: <strong className="text-slate-850">222</strong></li>
-                  <li>• Sunil (Mechanic): <strong className="text-slate-800">mechanic</strong> / password: <strong className="text-slate-850">333</strong></li>
-                  <li>• Farmer Customer: <strong className="text-slate-800">prasad</strong> / password: <strong className="text-slate-850">444</strong></li>
-                </ul>
-              </div>
-
               <div className="pt-3 border-t flex justify-end gap-2">
                 <button 
                   type="button" 
