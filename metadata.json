@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Sri Reddy Tractor Mechanic Works \u0026 Automobile Shop",
+  "description": "Smart full-stack digital management system for Kuncharapu Nagi Reddy\u0027s tractor mechanical workshop and automobile spare parts shop. This system enables streamlined repair tracking, stock inventory management, automated invoice billing with QR codes, mechanic job assignment, and service booking with bilingual English and Telugu translations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

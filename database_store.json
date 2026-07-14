@@ -1,0 +1,348 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "username": "admin",
+      "password": "111",
+      "role": "admin",
+      "name": "Kuncharapu Nagi Reddy",
+      "phone": "+91 9866409550"
+    },
+    {
+      "id": "u2",
+      "username": "staff",
+      "password": "222",
+      "role": "staff",
+      "name": "Ramesh Babu",
+      "phone": "+91 9959654321"
+    },
+    {
+      "id": "u3",
+      "username": "mechanic",
+      "password": "333",
+      "role": "mechanic",
+      "name": "Sunil Kumar",
+      "phone": "+91 9848123123"
+    },
+    {
+      "id": "u4",
+      "username": "prasad",
+      "password": "444",
+      "role": "customer",
+      "name": "B. Prasad Reddy",
+      "phone": "+91 9123456789"
+    }
+  ],
+  "customers": [
+    {
+      "id": "c1",
+      "name": "B. Prasad Reddy",
+      "phone": "9123456789",
+      "address": "Suryapet Village, Telangana",
+      "tractorModel": "Swaraj 744 FE",
+      "tractorNumber": "AP-21-TJ-5566",
+      "joinedDate": "2025-01-10"
+    },
+    {
+      "id": "c2",
+      "name": "M. Venkat Ramana",
+      "phone": "9440123456",
+      "address": "Allagadda Taluka, Andhra Pradesh",
+      "tractorModel": "Mahindra 575 DI",
+      "tractorNumber": "AP-21-TX-9900",
+      "joinedDate": "2025-02-15"
+    },
+    {
+      "id": "c3",
+      "name": "Chandra Shekar",
+      "phone": "9849234567",
+      "address": "Khammam Road, Suryapet",
+      "tractorModel": "John Deere 5050 D",
+      "tractorNumber": "AP-21-UA-1234",
+      "joinedDate": "2025-03-20"
+    },
+    {
+      "id": "c4",
+      "name": "K. Ramudu",
+      "phone": "8008123456",
+      "address": "Banaganapalli, AP",
+      "tractorModel": "Massey Ferguson 241 DI",
+      "tractorNumber": "AP-21-UB-8877",
+      "joinedDate": "2025-04-02"
+    }
+  ],
+  "spareParts": [
+    {
+      "id": "p1",
+      "name": "Swaraj Primary Outer Air Filter",
+      "category": "Filters",
+      "brand": "Donaldson",
+      "code": "FL-SW-092",
+      "price": 1450,
+      "stock": 12,
+      "supplier": "Ananta Spares Ltd",
+      "minStockAlert": 5
+    },
+    {
+      "id": "p2",
+      "name": "Mahindra 575 DI Heavy-Duty Clutch Plate",
+      "category": "Clutch parts",
+      "brand": "Valeo",
+      "code": "CP-MH-575",
+      "price": 4200,
+      "stock": 4,
+      "supplier": "Hyderabad Auto Parts",
+      "minStockAlert": 5
+    },
+    {
+      "id": "p3",
+      "name": "Tractor Engine Head Gasket (Universal)",
+      "category": "Tractor engine parts",
+      "brand": "Goetze",
+      "code": "GK-UN-109",
+      "price": 1850,
+      "stock": 2,
+      "supplier": "Goetze India",
+      "minStockAlert": 4
+    },
+    {
+      "id": "p4",
+      "name": "Bosch Fuel Filter Element",
+      "category": "Filters",
+      "brand": "Bosch",
+      "code": "FL-BS-441",
+      "price": 380,
+      "stock": 45,
+      "supplier": "Bosch India Spares",
+      "minStockAlert": 10
+    },
+    {
+      "id": "p5",
+      "name": "Heavy-Duty Clutch Release Bearing",
+      "category": "Clutch parts",
+      "brand": "SKF",
+      "code": "BR-SKF-88",
+      "price": 1250,
+      "stock": 3,
+      "supplier": "SKF Bearings",
+      "minStockAlert": 5
+    },
+    {
+      "id": "p6",
+      "name": "Tractor Brake Shoe Set (Left + Right)",
+      "category": "Brake parts",
+      "brand": "TVS Girling",
+      "code": "BK-TVS-03",
+      "price": 2800,
+      "stock": 8,
+      "supplier": "TVS Auto Distribution",
+      "minStockAlert": 3
+    }
+  ],
+  "mechanics": [
+    {
+      "id": "m1",
+      "name": "Sunil Kumar (Senior Mechanic)",
+      "phone": "9848123123",
+      "specialization": "Engine Overhauling & Gearbox Repair",
+      "status": "Active",
+      "skills": [
+        "Engine",
+        "Gearbox",
+        "Clutch"
+      ]
+    },
+    {
+      "id": "m2",
+      "name": "Anjaneyulu M.",
+      "phone": "9177123999",
+      "specialization": "Hydraulics & Fuel Systems Specialist",
+      "status": "Active",
+      "skills": [
+        "Hydraulics",
+        "Fuel Injection",
+        "Filters"
+      ]
+    },
+    {
+      "id": "m3",
+      "name": "Srinivasulu Gowd",
+      "phone": "9652123888",
+      "specialization": "Electrical Charging & Starter Repairs",
+      "status": "Active",
+      "skills": [
+        "Battery",
+        "Starter Motor",
+        "Brakes"
+      ]
+    }
+  ],
+  "repairs": [
+    {
+      "id": "r1",
+      "customerId": "c1",
+      "customerName": "B. Prasad Reddy",
+      "customerPhone": "9123456789",
+      "tractorModel": "Swaraj 744 FE",
+      "tractorNumber": "AP-21-TJ-5566",
+      "issueDescription": "Severe engine smoking and low compression power when towing heavy trolley load.",
+      "assignedMechanicId": "m1",
+      "assignedMechanicName": "Sunil Kumar (Senior Mechanic)",
+      "status": "Completed",
+      "estimatedCost": 15000,
+      "notes": "Opened engine cylinder head. Gasket needs replacing, and outer air filter is fully clogged.",
+      "dateCreated": "2026-05-24T08:30:00Z",
+      "timeline": [
+        {
+          "status": "Pending",
+          "notes": "Farmer booked via online service request due to performance issues.",
+          "updatedBy": "Customer Portal",
+          "timestamp": "2026-05-24T08:30:00Z"
+        },
+        {
+          "status": "Accepted",
+          "notes": "Tractor inspected at the workshop. Assigned Sunil for cylinder overhauling.",
+          "updatedBy": "Ramesh Babu",
+          "timestamp": "2026-05-24T10:15:00Z"
+        },
+        {
+          "status": "Under Repair",
+          "notes": "Dismantled engine cover. Cylinder head gasket found burnt.",
+          "updatedBy": "Sunil Kumar (Senior Mechanic)",
+          "timestamp": "2026-05-25T14:00:00Z"
+        },
+        {
+          "status": "Completed",
+          "notes": "Opened engine cylinder head. Gasket needs replacing, and outer air filter is fully clogged.",
+          "updatedBy": "Ramesh Babu",
+          "timestamp": "2026-05-28T13:44:18.886Z"
+        }
+      ]
+    },
+    {
+      "id": "r2",
+      "customerId": "c2",
+      "customerName": "M. Venkat Ramana",
+      "customerPhone": "9440123456",
+      "tractorModel": "Mahindra 575 DI",
+      "tractorNumber": "AP-21-TX-9900",
+      "issueDescription": "Clutch pedal is fully hard and gears are slipping or grinding when changing gear.",
+      "assignedMechanicId": "m1",
+      "assignedMechanicName": "Sunil Kumar (Senior Mechanic)",
+      "status": "Spare Parts Required",
+      "estimatedCost": 6500,
+      "notes": "Clutch plate and release bearing require absolute replacement. Waiting for stock approval.",
+      "dateCreated": "2026-05-25T09:10:00Z",
+      "timeline": [
+        {
+          "status": "Pending",
+          "notes": "Complaint: Clutch slip reported.",
+          "updatedBy": "Ramesh Babu",
+          "timestamp": "2026-05-25T09:10:00Z"
+        },
+        {
+          "status": "Accepted",
+          "notes": "Allocated workspace yard 2.",
+          "updatedBy": "Ramesh Babu",
+          "timestamp": "2026-05-25T11:00:00Z"
+        },
+        {
+          "status": "Under Repair",
+          "notes": "Split the tractor engine from transmission block; clutch plate tooth sheared.",
+          "updatedBy": "Sunil Kumar (Senior Mechanic)",
+          "timestamp": "2026-05-26T09:00:00Z"
+        },
+        {
+          "status": "Spare Parts Required",
+          "notes": "Low stock on Mahindra clutch plates; requested replacement parts from store.",
+          "updatedBy": "Sunil Kumar (Senior Mechanic)",
+          "timestamp": "2026-05-26T15:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "r3",
+      "customerId": "c3",
+      "customerName": "Chandra Shekar",
+      "customerPhone": "9849234567",
+      "tractorModel": "John Deere 5050 D",
+      "tractorNumber": "AP-21-UA-1234",
+      "issueDescription": "Routine servicing, transmission oil change, and fuel filter replacement.",
+      "assignedMechanicId": "m2",
+      "assignedMechanicName": "Anjaneyulu M.",
+      "status": "Completed",
+      "estimatedCost": 4500,
+      "notes": "Completed transmission oil flush, changed Bosch fuel filters, and refilled coolant reservoir.",
+      "dateCreated": "2026-05-27T07:15:00Z",
+      "timeline": [
+        {
+          "status": "Pending",
+          "notes": "Scheduled servicing request.",
+          "updatedBy": "Ramesh Babu",
+          "timestamp": "2026-05-27T07:15:00Z"
+        },
+        {
+          "status": "Accepted",
+          "notes": "Assigned to Anjaneyulu.",
+          "updatedBy": "Ramesh Babu",
+          "timestamp": "2026-05-27T08:00:00Z"
+        },
+        {
+          "status": "Under Repair",
+          "notes": "Oil draining and fuel filter replaced.",
+          "updatedBy": "Anjaneyulu M.",
+          "timestamp": "2026-05-27T11:30:00Z"
+        },
+        {
+          "status": "Completed",
+          "notes": "Tuning finished, test run complete and success.",
+          "updatedBy": "Anjaneyulu M.",
+          "timestamp": "2026-05-27T16:00:00Z"
+        }
+      ]
+    }
+  ],
+  "invoices": [
+    {
+      "id": "i1",
+      "invoiceNumber": "SR-2026-0501",
+      "repairId": "r3",
+      "customerId": "c3",
+      "customerName": "Chandra Shekar",
+      "customerPhone": "9849234567",
+      "tractorModel": "John Deere 5050 D",
+      "tractorNumber": "AP-21-UA-1234",
+      "mechanicId": "m2",
+      "mechanicName": "Anjaneyulu M.",
+      "repairCharges": 1200,
+      "sparePartsUsed": [
+        {
+          "partId": "p4",
+          "partName": "Bosch Fuel Filter Element",
+          "quantity": 2,
+          "price": 380
+        },
+        {
+          "partId": "p8",
+          "partName": "Tractor Transmission Gear Oil (7.5 Liters)",
+          "quantity": 1,
+          "price": 3400
+        }
+      ],
+      "discount": 200,
+      "taxGst": 18,
+      "totalAmount": 4908,
+      "dateCreated": "2026-05-27T16:30:00Z",
+      "paymentStatus": "Paid",
+      "qrCodeValue": "VERIFIED_SRI_REDDY_INV_SR-2026-0501_TOTAL_4908_PAID"
+    }
+  ],
+  "settings": {
+    "shopName": "Sri Reddy Tractor Mechanic Works & Automobile Shop",
+    "ownerName": "Kuncharapu Nagi Reddy",
+    "phone": "+91 9866409550",
+    "whatsapp": "+91 9866409550",
+    "address": "Khammam Cross Roads, Suryapet, Telangana - 508213",
+    "workingHours": "08:00 AM - 08:30 PM (Sunday Closed)"
+  }
+}
