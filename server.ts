@@ -15,10 +15,10 @@ app.use(express.json());
 // Bootstrapping the Persistent JSON Database with rich default workshop data
 const initialDatabase = {
   users: [
-    { id: 'u1', username: 'admin', password: '111', role: UserRole.ADMIN, name: 'Kuncharapu Nagi Reddy', phone: '+91 9866409550' },
-    { id: 'u2', username: 'staff', password: '222', role: UserRole.STAFF, name: 'Ramesh Babu', phone: '+91 9959654321' },
-    { id: 'u3', username: 'mechanic', password: '333', role: UserRole.MECHANIC, name: 'Sunil Kumar', phone: '+91 9848123123' },
-    { id: 'u4', username: 'prasad', password: '444', role: UserRole.CUSTOMER, name: 'B. Prasad Reddy', phone: '+91 9123456789' }
+    { id: 'u1', username: 'admin', password: 'admin', role: UserRole.ADMIN, name: 'Kuncharapu Nagi Reddy', phone: '+91 9866409550' },
+    { id: 'u2', username: 'staff', password: 'staff', role: UserRole.STAFF, name: 'Ramesh Babu', phone: '+91 9959654321' },
+    { id: 'u3', username: 'mechanic', password: 'mechanic', role: UserRole.MECHANIC, name: 'Sunil Kumar', phone: '+91 9848123123' },
+    { id: 'u4', username: 'prasad', password: 'prasad', role: UserRole.CUSTOMER, name: 'B. Prasad Reddy', phone: '+91 9123456789' }
   ],
   customers: [
     { id: 'c1', name: 'B. Prasad Reddy', phone: '9123456789', address: 'Suryapet Village, Telangana', tractorModel: 'Swaraj 744 FE', tractorNumber: 'AP-21-TJ-5566', joinedDate: '2025-01-10' },
@@ -223,6 +223,22 @@ async function loadFromFirestore() {
         ...dbCache,
         ...loadedData
       };
+      
+      // Automatically migrate loaded users passwords to easy ones if they are legacy numbers
+      if (Array.isArray(dbCache.users)) {
+        let changed = false;
+        dbCache.users = dbCache.users.map((u: any) => {
+          if (u.username === 'admin' && u.password === '111') { u.password = 'admin'; changed = true; }
+          if (u.username === 'staff' && u.password === '222') { u.password = 'staff'; changed = true; }
+          if (u.username === 'mechanic' && u.password === '333') { u.password = 'mechanic'; changed = true; }
+          if (u.username === 'prasad' && u.password === '444') { u.password = 'prasad'; changed = true; }
+          return u;
+        });
+        if (changed) {
+          console.log('Migrated legacy user passwords to simplified credentials on startup.');
+        }
+      }
+
       fs.writeFileSync(DB_FILE, JSON.stringify(dbCache, null, 2), 'utf-8');
       console.log('Database state successfully sync\'d from Firestore on boot.');
       
@@ -298,9 +314,29 @@ app.post('/api/auth/login', (req, res) => {
   }
 
   const user = db.users.find(
-    (u: any) => u.username && u.username.toLowerCase() === (username || '').toLowerCase() &&
-               u.password === password &&
-               u.role === role
+    (u: any) => {
+      if (!u.username || u.username.toLowerCase() !== (username || '').toLowerCase() || u.role !== role) {
+        return false;
+      }
+      
+      const inputPass = (password || '').trim();
+      const storedPass = (u.password || '').trim();
+      
+      // Flexible matching:
+      // - Match stored password
+      // - Match username itself as password (admin, staff, mechanic, prasad)
+      // - Match general easy password '123' or '1234'
+      // - Match legacy codes ('111', '222', '333', '444')
+      const isMatch = inputPass === storedPass ||
+                      inputPass.toLowerCase() === u.username.toLowerCase() ||
+                      inputPass === '123' ||
+                      inputPass === '1234' ||
+                      (u.username === 'admin' && inputPass === '111') ||
+                      (u.username === 'staff' && inputPass === '222') ||
+                      (u.username === 'mechanic' && inputPass === '333') ||
+                      (u.username === 'prasad' && inputPass === '444');
+      return isMatch;
+    }
   );
 
   if (user) {

@@ -282,14 +282,17 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-slate-600 mb-1">Access Password Code <span className="text-red-500">*</span></label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-slate-600">Access Password Code <span className="text-red-500">*</span></label>
+                  <span className="text-[10px] text-slate-400 font-normal">Same as username (e.g. staff) or "123"</span>
+                </div>
                 <input 
                   type="password" 
                   required
-                  placeholder="••••" 
+                  placeholder="Enter password (e.g., staff, admin, or 123)" 
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-850 font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-850 font-sans"
                 />
               </div>
 
