@@ -2,7 +2,10 @@
   "version": 2,
   "functions": {
     "api/index.ts": {
-      "includeFiles": "database_store.json"
+      "includeFiles": [
+        "database_store.json",
+        "firebase-applet-config.json"
+      ]
     }
   },
   "rewrites": [

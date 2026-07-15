@@ -294,11 +294,8 @@ let initPromise: Promise<void> | null = null;
 
 function ensureDbLoaded(): Promise<void> {
   if (!initPromise) {
-    if (firestoreDb) {
-      initPromise = loadFromFirestore();
-    } else {
-      initPromise = Promise.resolve();
-    }
+    // TEMPORARILY disable Firestore loading
+    initPromise = Promise.resolve();
   }
   return initPromise;
 }
