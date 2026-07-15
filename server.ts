@@ -289,10 +289,32 @@ async function saveToFirestoreBackground(data: any) {
   }
 }
 
-// Trigger Firestore loading on boot asynchronously
-if (firestoreDb) {
-  loadFromFirestore();
+// Trigger Firestore loading on boot asynchronously with a Promise tracker
+let initPromise: Promise<void> | null = null;
+
+function ensureDbLoaded(): Promise<void> {
+  if (!initPromise) {
+    if (firestoreDb) {
+      initPromise = loadFromFirestore();
+    } else {
+      initPromise = Promise.resolve();
+    }
+  }
+  return initPromise;
 }
+
+// Trigger immediately on load
+ensureDbLoaded();
+
+// Middleware to block /api requests until the database is fully loaded
+app.use('/api', async (req, res, next) => {
+  try {
+    await ensureDbLoaded();
+  } catch (err) {
+    console.error('[Middleware] Error waiting for database initialization:', err);
+  }
+  next();
+});
 
 // API Endpoints
 
